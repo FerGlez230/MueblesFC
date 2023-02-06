@@ -1,0 +1,5 @@
+export enum Locations {
+  SAN_ISIDRO = 'SAN_ISIDRO',
+  SAN_ESTEBAN = 'SAN_ESTEBAN',
+  TATEPOSCO = 'TATEPOSCO',
+}

@@ -44,7 +44,7 @@ export class ProductsController {
   ) {
     limit = limit > 100 ? 100 : limit;
     console.log(category, page, limit);
-    return this.productsService.findByCategory(category, {
+    return this.productsService.findByCategory(category.toUpperCase(), {
       page,
       limit,
     });

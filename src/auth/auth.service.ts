@@ -10,7 +10,7 @@ import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ErrorHandler } from 'src/common/handlers/error-handler';
 import { LoginUserDto } from './dto/login-user.dto';
-import { ErrorMessages } from 'src/common/enums/error-messages-enum';
+import { ErrorMessages } from 'src/common/enums/error-messages.enum';
 
 @Injectable()
 export class AuthService {

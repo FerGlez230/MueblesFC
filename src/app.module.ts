@@ -5,7 +5,7 @@ import { ProductsModule } from './products/products.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { ClientModule } from './client/client.module';
+import { ClientsModule } from './client/client.module';
 
 @Module({
   imports: [
@@ -22,7 +22,7 @@ import { ClientModule } from './client/client.module';
     }),
     ProductsModule,
     AuthModule,
-    ClientModule,
+    ClientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

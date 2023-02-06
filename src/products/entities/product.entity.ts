@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { Categories } from '../enums/categories-enum';
+import { Categories } from '../enums/categories.enum';
 @Entity()
 export class Product {
   @PrimaryGeneratedColumn('uuid')
@@ -20,7 +20,7 @@ export class Product {
   @Column()
   @IsString()
   @MinLength(3)
-  @IsIn(Categories)
+  @IsIn(Object.values(Categories))
   category: string;
 
   @Column()

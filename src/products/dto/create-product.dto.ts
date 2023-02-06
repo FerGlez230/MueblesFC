@@ -6,7 +6,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
-import { Categories } from '../enums/categories-enum';
+import { Categories } from '../enums/categories.enum';
 
 export class CreateProductDto {
   @IsString()
@@ -19,6 +19,6 @@ export class CreateProductDto {
 
   @IsString()
   @MinLength(3)
-  @IsIn(Categories)
+  @IsIn(Object.values(Categories))
   category: string;
 }

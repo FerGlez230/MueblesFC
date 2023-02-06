@@ -1,4 +1,3 @@
-
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -6,7 +5,7 @@ import { Product } from './entities/product.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { ErrorHandler } from '../common/handlers/error-handler';
-import { ErrorMessages } from 'src/common/enums/error-messages-enum';
+import { ErrorMessages } from 'src/common/enums/error-messages.enum';
 import {
   IPaginationOptions,
   Pagination,

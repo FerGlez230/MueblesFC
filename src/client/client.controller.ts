@@ -6,10 +6,12 @@ import {
   Patch,
   Param,
   Delete,
+  DefaultValuePipe,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
-import { CreateClientDto } from './dto/create-client.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
+import { CreateClientDto, UpdateClientDto, FilterClientDto } from './dto';
 
 @Controller('clients')
 export class ClientController {
@@ -20,14 +22,24 @@ export class ClientController {
     return this.clientService.create(createClientDto);
   }
 
-  @Get()
-  findAll() {
-    return this.clientService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.clientService.findOne(id);
+  }
+
+  @Get()
+  findBy(
+    @Body() filterClient: FilterClientDto,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ) {
+    limit = limit > 100 ? 100 : limit;
+    filterClient = { name: '', lastname: '', location: '', ...filterClient };
+    console.log(filterClient);
+    return this.clientService.findBy(filterClient, {
+      page,
+      limit,
+    });
   }
 
   @Patch(':id')

@@ -6,6 +6,8 @@ import { Client } from './entities/client.entity';
 import { Repository } from 'typeorm';
 import { ErrorHandler } from 'src/common/handlers/error-handler';
 import { ErrorMessages } from 'src/common/enums/error-messages.enum';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
+import { FilterClientDto } from './dto';
 
 @Injectable()
 export class ClientsService {
@@ -26,7 +28,19 @@ export class ClientsService {
   findAll() {
     return `This action returns all client`;
   }
-
+  async findBy(filterClientDto: FilterClientDto, options: IPaginationOptions) {
+    const queryBuilder = this.clientRepository.createQueryBuilder('c');
+    queryBuilder
+      .where('c.name ilike :name', { name: `%${filterClientDto.name}%` })
+      .andWhere('c.lastname ilike :lastname', {
+        lastname: `%${filterClientDto.lastname}%`,
+      })
+      .andWhere('c.location = :location', {
+        location: filterClientDto.location,
+      });
+    const queryResults = await paginate<Client>(queryBuilder, options);
+    return queryResults;
+  }
   async findOne(id: string) {
     try {
       const client = await this.clientRepository.findOneBy({ id });
@@ -50,10 +64,10 @@ export class ClientsService {
     }
   }
 
-  remove(id: string) {
+  async remove(id: string) {
     this.findOne(id);
     try {
-      return this.clientRepository.delete(id);
+      return await this.clientRepository.delete(id);
     } catch (error) {
       this.errorHandler.handleDBException(error, this.constructor.name);
     }

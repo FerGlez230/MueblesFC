@@ -1,6 +1,7 @@
 import { IsIn, IsOptional, IsString, MinLength } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Locations } from '../enums/location.enum';
+import { Purchase } from 'src/purchases/entities/purchase.entity';
 
 @Entity('clients')
 export class Client {
@@ -36,4 +37,7 @@ export class Client {
   @IsString()
   @IsOptional()
   description: string;
+
+  @OneToMany(() => Purchase, (purchase) => purchase.client, {})
+  purchase: Purchase[];
 }

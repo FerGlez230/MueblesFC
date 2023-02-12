@@ -34,8 +34,9 @@ export class ClientsService {
       .where('c.name ilike :name', { name: `%${filterClientDto.name}%` })
       .andWhere('c.lastname ilike :lastname', {
         lastname: `%${filterClientDto.lastname}%`,
-      })
-      .andWhere('c.location = :location', {
+      });
+    if (filterClientDto.location.length)
+      queryBuilder.andWhere('c.location = :location', {
         location: filterClientDto.location,
       });
     const queryResults = await paginate<Client>(queryBuilder, options);

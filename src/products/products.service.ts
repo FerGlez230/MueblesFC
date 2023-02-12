@@ -11,7 +11,7 @@ import {
   Pagination,
   paginate,
 } from 'nestjs-typeorm-paginate';
-import { PricesHelper } from 'src/common/helpers/prices.helper';
+import { PriceHelper } from 'src/common/helpers/prices.helper';
 
 @Injectable()
 export class ProductsService {
@@ -20,7 +20,7 @@ export class ProductsService {
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
     private readonly errorHandler: ErrorHandler,
-    private readonly pricesHelper: PricesHelper,
+    private readonly priceHelper: PriceHelper,
   ) {}
   async create(createProductDto: CreateProductDto) {
     try {
@@ -82,14 +82,8 @@ export class ProductsService {
   setFinalProduct(product: Product) {
     return {
       ...product,
-      shortTermPrice: this.pricesHelper.getMultiploSuperior(
-        product.price * 1.5,
-        10,
-      ),
-      longTermPrice: this.pricesHelper.getMultiploSuperior(
-        product.price * 2 + product.price * 0.1,
-        10,
-      ),
+      shortTermPrice: this.priceHelper.getShortTermPayment(product.price),
+      longTermPrice: this.priceHelper.getLongTermPayment(product.price),
     };
   }
 }

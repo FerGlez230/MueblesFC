@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { ErrorHandler } from '../common/handlers/error-handler';
 import { Purchase, PartialPurchase } from './entities';
@@ -17,6 +21,7 @@ export class PurchasesService {
     private readonly partialPurchaseRepository: Repository<PartialPurchase>,
     private readonly errorHandler: ErrorHandler,
     private readonly purchaseHelper: PurchasesHelper,
+    private readonly dataSource: DataSource,
   ) {}
   async create(createPurchaseDto: CreatePurchaseDto) {
     try {
@@ -30,7 +35,7 @@ export class PurchasesService {
       const purchase = this.purchaseRepository.create({
         ...purchaseDetails,
         total,
-        partialPurchase: partialPurchases.map((partialPurchase) =>
+        partialPurchases: partialPurchases.map((partialPurchase) =>
           this.partialPurchaseRepository.create({
             product: partialPurchase.product,
             quantity: partialPurchase.quantity,
@@ -62,11 +67,48 @@ export class PurchasesService {
   }
 
   async update(id: string, updatePurchaseDto: UpdatePurchaseDto) {
-    const purchase = this.findOne(id);
+    const { partialPurchases, ...toUpdate } = updatePurchaseDto;
+    const purchase = await this.purchaseRepository.preload({
+      id,
+      total: 0,
+      ...toUpdate,
+      partialPurchases: [],
+    });
+    if (!purchase)
+      throw new NotFoundException(`${ErrorMessages.MISSING_OBJECT} la cuenta`);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    // const purchase = this.findOne(id);
     try {
-      await this.purchaseRepository.update(id, updatePurchaseDto);
-      return { ...purchase, ...updatePurchaseDto };
+      if (!partialPurchases) {
+        throw new BadRequestException(
+          `${ErrorMessages.MISSING_PROPERTIES} compras parciales`,
+        );
+      }
+      let total =
+        this.purchaseHelper.calculateTotalSumatoryPrice(partialPurchases);
+      total = this.purchaseHelper.calculateTotalPriceWithProfit(
+        total,
+        toUpdate.weeks,
+      );
+      await queryRunner.manager.delete(PartialPurchase, { purchase: { id } });
+      purchase.partialPurchases = partialPurchases.map((partialPurchase) =>
+        this.partialPurchaseRepository.create({
+          product: partialPurchase.product,
+          quantity: partialPurchase.quantity,
+          price: partialPurchase.product.price,
+        }),
+      );
+      purchase.total = total;
+      await queryRunner.manager.save(purchase);
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+      return this.findOne(id);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
       this.errorHandler.handleDBException(error, this.constructor.name);
     }
   }

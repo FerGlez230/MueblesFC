@@ -3,4 +3,5 @@ export enum ErrorMessages {
   MISSING_USER_LOGIN = 'Registrate primero',
   INVALID_CREDENTIALS = 'Credenciales inválidas',
   MISSING_OBJECT = 'No se encontro',
+  MISSING_PROPERTIES = 'Se requiere enviar la propiedad',
 }

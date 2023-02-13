@@ -35,7 +35,6 @@ export class ClientController {
   ) {
     limit = limit > 100 ? 100 : limit;
     filterClient = { name: '', lastname: '', location: '', ...filterClient };
-    console.log(filterClient);
     return this.clientService.findBy(filterClient, {
       page,
       limit,

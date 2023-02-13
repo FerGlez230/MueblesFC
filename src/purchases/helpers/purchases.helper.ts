@@ -2,7 +2,9 @@ import { PriceHelper } from 'src/common/helpers/prices.helper';
 import { PartialPurchase } from '../entities';
 
 export class PurchasesHelper {
-  constructor(private readonly priceHelper: PriceHelper) {}
+  private priceHelper = new PriceHelper();
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  constructor() {}
   public calculateTotalPriceWithProfit(total: number, weeks: number): number {
     return weeks <= 12
       ? this.priceHelper.getShortTermPayment(total)

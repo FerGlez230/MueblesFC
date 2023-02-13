@@ -43,7 +43,6 @@ export class ProductsController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
   ) {
     limit = limit > 100 ? 100 : limit;
-    console.log(category, page, limit);
     return this.productsService.findByCategory(category.toUpperCase(), {
       page,
       limit,

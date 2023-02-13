@@ -28,6 +28,8 @@ export class PartialPurchase {
   })
   product: Product;
 
-  @ManyToOne(() => Purchase, (purchase) => purchase.partialPurchase)
+  @ManyToOne(() => Purchase, (purchase) => purchase.partialPurchases, {
+    onDelete: 'CASCADE',
+  })
   purchase: Purchase;
 }

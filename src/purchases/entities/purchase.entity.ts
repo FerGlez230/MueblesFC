@@ -44,7 +44,7 @@ export class Purchase {
       cascade: true,
     },
   )
-  partialPurchase: PartialPurchase[];
+  partialPurchases: PartialPurchase[];
 
   @ManyToOne(() => Client, (client) => client.purchase, {
     eager: true,

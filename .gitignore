@@ -2,7 +2,8 @@
 /dist
 /node_modules
 /postgres
-
+.vscode
+.git
 .env
 
 # Logs

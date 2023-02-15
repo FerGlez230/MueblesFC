@@ -79,8 +79,6 @@ export class PurchasesService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
-    // const purchase = this.findOne(id);
     try {
       if (!partialPurchases) {
         throw new BadRequestException(

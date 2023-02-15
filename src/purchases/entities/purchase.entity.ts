@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { PartialPurchase } from './partial-purchase.entity';
+import { Payment } from 'src/payments/entities/payment.entity';
 
 @Entity('purchases')
 export class Purchase {
@@ -46,6 +47,12 @@ export class Purchase {
   )
   partialPurchases: PartialPurchase[];
 
+  @IsObject()
+  @OneToMany(() => Payment, (payment) => payment.purchase, {
+    eager: true,
+    cascade: true,
+  })
+  payments: Payment[];
   @ManyToOne(() => Client, (client) => client.purchase, {
     eager: true,
   })

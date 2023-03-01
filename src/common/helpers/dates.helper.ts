@@ -6,4 +6,7 @@ export class DatesHelper {
     const date1 = dayjs(mostRecentDate);
     return date1.diff(dayjs(initialDate), 'week');
   }
+  getDate(date: string) {
+    return dayjs(date).format('YYYY-MM-DD');
+  }
 }

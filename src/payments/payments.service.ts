@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +7,7 @@ import { Payment } from './entities/payment.entity';
 import { ErrorHandler } from 'src/common/handlers/error-handler';
 import { PaymentsHelper } from './helpers/payments.helper';
 import { DatesHelper } from 'src/common/helpers/dates.helper';
+import { ErrorMessages } from 'src/common/enums/error-messages.enum';
 
 @Injectable()
 export class PaymentsService {
@@ -61,19 +62,47 @@ export class PaymentsService {
       this.errorHandler.handleDBException(error, this.constructor.name);
     }
   }
-  findAll() {
-    return `This action returns all payments`;
+  async findAll(paymentId: string) {
+    return await this.getPaymentHistory(paymentId);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
+  async findOne(id: string) {
+    try {
+      const payment = await this.paymentRepository.findOneBy({ id });
+      if (!payment) {
+        throw new NotFoundException(`${ErrorMessages.MISSING_OBJECT} el abono`);
+      }
+      return payment;
+    } catch (error) {
+      this.errorHandler.handleDBException(error, this.constructor.name);
+    }
   }
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
+  async update(id: string, updatePaymentDto: UpdatePaymentDto) {
+    const payment = await this.findOne(id);
+    let date = undefined;
+    try {
+      if (updatePaymentDto.date) {
+        date = await this.paymentRepository.query(
+          `SELECT TO_DATE('${updatePaymentDto.date}','DyMonDDYYYY')`,
+        );
+      }
+      await this.paymentRepository.update(id, {
+        ...updatePaymentDto,
+        date: date[0].to_date,
+      });
+      return {
+        ...payment,
+        ...updatePaymentDto,
+        date: date ? this.datesHelper.getDate(date[0]?.to_date) : undefined,
+      };
+    } catch (error) {
+      this.errorHandler.handleDBException(error, this.constructor.name);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
+  async remove(id: string) {
+    await this.findOne(id);
+    return await this.paymentRepository.delete(id);
   }
 }

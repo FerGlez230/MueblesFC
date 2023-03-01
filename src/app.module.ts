@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { ClientsModule } from './client/client.module';
 import { PurchasesModule } from './purchases/purchases.module';
 import { PaymentsModule } from './payments/payments.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { PaymentsModule } from './payments/payments.module';
     ClientsModule,
     PurchasesModule,
     PaymentsModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

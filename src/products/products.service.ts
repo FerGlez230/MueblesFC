@@ -86,4 +86,13 @@ export class ProductsService {
       longTermPrice: this.priceHelper.getLongTermPayment(product.price),
     };
   }
+  async removeAll() {
+    const query = this.productRepository.createQueryBuilder('product');
+
+    try {
+      return await query.delete().where({}).execute();
+    } catch (error) {
+      this.errorHandler.handleDBException(error, this.constructor.name);
+    }
+  }
 }

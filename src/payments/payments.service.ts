@@ -27,8 +27,6 @@ export class PaymentsService {
         this.paymentHelper.calculatePaymentsSum(paymentsHistory);
       const balanceDue = purchase.total - paymentSum;
       const minDate = this.paymentHelper.getMinDate(paymentsHistory);
-      console.log(minDate);
-      console.log(this.datesHelper.getWeeksBetween(minDate, purchase.date));
       const weeksLeft =
         purchase.weeks -
         this.datesHelper.getWeeksBetween(minDate, purchase.date);
